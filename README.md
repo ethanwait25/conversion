@@ -1,2 +1,3 @@
-# conversion
-An AI Play on Chess!
+# Conversion
+
+A Missionary-Centric, AI-Powered Play on Chess!
