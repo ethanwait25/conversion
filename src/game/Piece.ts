@@ -1,5 +1,5 @@
 import { Move } from "./Move.js"
-import { Board } from "./Board.js"
+import type { Board } from "./Board.js"
 import { Position } from "./Position.js"
 import { Color } from "./enums/Color.js"
 import { PieceType } from "./enums/PieceType.js"

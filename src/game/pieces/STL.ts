@@ -1,7 +1,7 @@
-import { Board } from "../Board.js";
+import { Move } from "../Move.js";
+import type { Board } from "../Board.js";
 import { Color } from "../enums/Color.js";
 import { PieceType } from "../enums/PieceType.js";
-import { Move } from "../Move.js";
 import { Piece } from "../Piece.js";
 import { Position } from "../Position.js";
 

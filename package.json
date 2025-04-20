@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node dist/game/Game.js"
+    "start": "tsc && node dist/game/Game.js",
+    "build": "tsc",
+    "serve": "npx serve public"
   },
   "keywords": [],
   "type": "module",

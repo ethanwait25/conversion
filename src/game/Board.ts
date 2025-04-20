@@ -1,12 +1,7 @@
-import { Piece } from "./Piece.js"
+import type { Piece } from "./Piece.js"
 import { Position } from "./Position.js";
 import { Color } from "./enums/Color.js";
-import { President } from "./pieces/President.js"
-import { Assistant } from "./pieces/Assistant.js"
-import { ZL } from "./pieces/ZL.js"
-import { DL } from "./pieces/DL.js"
-import { STL } from "./pieces/STL.js"
-import { Missionary } from "./pieces/Missionary.js"
+import { createPiece } from "./pieces/PieceFactory.js";
 import { PositionTracker } from "./PositionTracker.js";
 import { PieceType } from "./enums/PieceType.js";
 
@@ -26,30 +21,30 @@ export class Board {
         return this.board[pos.row-1][pos.col-1];
     }
 
-    private addPiece(pos: Position, piece: Piece) {
+    public setPiece(pos: Position, piece: Piece | null) {
         this.board[pos.row-1][pos.col-1] = piece;
     }
 
     private setupBoard() {
-        this.addPiece(new Position(1, 1), new Assistant(Color.BLACK));
-        this.addPiece(new Position(1, 2), new President(Color.BLACK));
-        this.addPiece(new Position(1, 3), new ZL(Color.BLACK));
-        this.addPiece(new Position(1, 4), new STL(Color.BLACK));   
-        this.addPiece(new Position(1, 5), new DL(Color.BLACK));
+        this.setPiece(new Position(1, 1), createPiece(PieceType.ASSISTANT, Color.BLACK));
+        this.setPiece(new Position(1, 2), createPiece(PieceType.PRESIDENT, Color.BLACK));
+        this.setPiece(new Position(1, 3), createPiece(PieceType.ZL, Color.BLACK));
+        this.setPiece(new Position(1, 4), createPiece(PieceType.STL, Color.BLACK));   
+        this.setPiece(new Position(1, 5), createPiece(PieceType.DL, Color.BLACK));
 
-        this.addPiece(new Position(2, 2), new Missionary(Color.BLACK));
-        this.addPiece(new Position(2, 3), new Missionary(Color.BLACK));
-        this.addPiece(new Position(2, 4), new Missionary(Color.BLACK));
+        this.setPiece(new Position(2, 2), createPiece(PieceType.MISSIONARY, Color.BLACK));
+        this.setPiece(new Position(2, 3), createPiece(PieceType.MISSIONARY, Color.BLACK));
+        this.setPiece(new Position(2, 4), createPiece(PieceType.MISSIONARY, Color.BLACK));
 
-        this.addPiece(new Position(4, 2), new Missionary(Color.WHITE));
-        this.addPiece(new Position(4, 3), new Missionary(Color.WHITE));
-        this.addPiece(new Position(4, 4), new Missionary(Color.WHITE));
+        this.setPiece(new Position(4, 2), createPiece(PieceType.MISSIONARY, Color.WHITE));
+        this.setPiece(new Position(4, 3), createPiece(PieceType.MISSIONARY, Color.WHITE));
+        this.setPiece(new Position(4, 4), createPiece(PieceType.MISSIONARY, Color.WHITE));
 
-        this.addPiece(new Position(5, 1), new DL(Color.WHITE));
-        this.addPiece(new Position(5, 2), new STL(Color.WHITE));
-        this.addPiece(new Position(5, 3), new ZL(Color.WHITE));
-        this.addPiece(new Position(5, 4), new President(Color.WHITE));   
-        this.addPiece(new Position(5, 5), new Assistant(Color.WHITE));
+        this.setPiece(new Position(5, 1), createPiece(PieceType.DL, Color.WHITE));
+        this.setPiece(new Position(5, 2), createPiece(PieceType.STL, Color.WHITE));
+        this.setPiece(new Position(5, 3), createPiece(PieceType.ZL, Color.WHITE));
+        this.setPiece(new Position(5, 4), createPiece(PieceType.PRESIDENT, Color.WHITE));   
+        this.setPiece(new Position(5, 5), createPiece(PieceType.ASSISTANT, Color.WHITE));
 
         this.addDefaultTrackedPositions();
     }
