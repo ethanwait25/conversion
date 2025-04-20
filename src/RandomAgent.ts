@@ -3,7 +3,7 @@ import { Game } from "./game/Game.js";
 import { Move } from "./game/Move.js";
 import { Player } from "./Player.js"
 
-export class Agent extends Player {
+export class RandomAgent extends Player {
     public constructor(color: Color) {
         super(color);
     }

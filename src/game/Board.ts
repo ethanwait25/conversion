@@ -4,6 +4,7 @@ import { Color } from "./enums/Color.js";
 import { createPiece } from "./pieces/PieceFactory.js";
 import { PositionTracker } from "./PositionTracker.js";
 import { PieceType } from "./enums/PieceType.js";
+import { Move } from "./Move.js";
 
 export class Board {
     public board: Piece[][] | null[][];
@@ -23,6 +24,23 @@ export class Board {
 
     public setPiece(pos: Position, piece: Piece | null) {
         this.board[pos.row-1][pos.col-1] = piece;
+    }
+
+    public getAllMovesForColor(color: Color): Move[] {
+        const moves: Move[] = []
+        for (let row = 1; row <= 5; ++row) {
+            for (let col = 1; col <= 5; ++col) {
+                const pos = new Position(row, col);
+                const piece = this.getPiece(pos);
+
+                if (piece && piece.color == color) {
+                    const pieceMoves = piece.getMoves(this, pos);
+                    moves.push(...pieceMoves);
+                }
+            }
+        }
+
+        return moves;
     }
 
     private setupBoard() {

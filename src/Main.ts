@@ -1,6 +1,20 @@
+import { Agent } from './Agent.js';
+import { Color } from './game/enums/Color.js';
 import { Game } from './game/Game.js';
 import { Position } from './game/Position.js';
-const game = new Game();
+import { Person } from './Person.js';
+import { RandomAgent } from './RandomAgent.js';
+
+const white = new Person(Color.WHITE);
+const black = new RandomAgent(Color.BLACK);
+const game = new Game(white, black);
+game.play(() => {
+    renderBoard();
+}).then((winner) => {
+    if (winner !== null) {
+        console.log(`${winner.toString()} wins!`);
+    }
+});;
 
 const boardEl = document.getElementById('board')!;
 let selectedPos: Position | null = null;
@@ -39,9 +53,13 @@ function renderBoard() {
                         );
 
                         if (isValid) {
-                            game.makeMove(move);
+                            const player = game.players[game.teamTurn];
+    
+                            if (player instanceof Person) {
+                                player.provideMove(move);
+                            }
+
                             selectedPos = null;
-                            renderBoard();
                         } else {
                             highlightMoves(selectedPos);
                         }

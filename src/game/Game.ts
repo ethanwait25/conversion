@@ -1,3 +1,4 @@
+import { Player } from "../Player.js";
 import { Board } from "./Board.js";
 import { Color } from "./enums/Color.js";
 import { PieceType } from "./enums/PieceType.js";
@@ -9,21 +10,31 @@ export class Game {
     public board: Board;
     public teamTurn: Color;
     public remaining: {[C in Color]: number};
+    public players: {[C in Color]: Player};
+    public winner: Color | null;
     
-    public constructor() {
+    public constructor(whitePlayer: Player, blackPlayer: Player) {
         this.board = new Board();
         this.teamTurn = Color.WHITE;
-        this.remaining = {
-            [Color.WHITE]: 8,
-            [Color.BLACK]: 8
+        this.remaining = {[Color.WHITE]: 8, [Color.BLACK]: 8}
+        this.players = {
+            [Color.WHITE]: whitePlayer,
+            [Color.BLACK]: blackPlayer
         }
+        this.winner = null;
     }
 
-    public play() {
-        while (this.remaining[this.teamTurn] > 0) {
-            
+    public async play(onUpdate?: () => void): Promise<Color | null> {
+        while (!(this.winner = this.checkWinner())) {
+            const currentPlayer = this.players[this.teamTurn];
+            const move = await currentPlayer.getMove(this);
+            this.makeMove(move);
+            if (onUpdate) {
+                onUpdate();
+            }
+            this.teamTurn = this.teamTurn === Color.WHITE ? Color.BLACK : Color.WHITE;
         }
-
+        return this.winner;
     }
 
     public makeMove(move: Move) {
@@ -75,6 +86,16 @@ export class Game {
             }
         }
 
+    }
+
+    private checkWinner(): Color | null {
+        if (this.remaining[Color.BLACK] === 0 || this.board.getAllMovesForColor(Color.BLACK).length === 0) {
+            return Color.WHITE
+        } else if (this.remaining[Color.WHITE] === 0 || this.board.getAllMovesForColor(Color.WHITE).length === 0) {
+            return Color.BLACK
+        } else {
+            return null;
+        }
     }
 
 }
