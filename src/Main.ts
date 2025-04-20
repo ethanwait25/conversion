@@ -11,7 +11,9 @@ function renderBoard() {
         for (let x = 1; x <= 5; x++) {
             const square = document.createElement('div');
             square.classList.add('square');
-            const piece = game.board.getPiece(new Position(y, x));
+            const pos = new Position(y, x);
+            const piece = game.board.getPiece(pos);
+
             if (piece) {
                 const img = document.createElement('img');
                 img.src = `./assets/${piece.color.toLowerCase()}-${piece.pieceType.toLowerCase()}.svg`;
@@ -21,13 +23,29 @@ function renderBoard() {
 
             square.addEventListener('click', () => {
                 if (!selectedPos && piece && piece.color === game.teamTurn) {
-                    selectedPos = new Position(y, x);
+                    selectedPos = pos;
                     highlightMoves(selectedPos);
                 } else if (selectedPos) {
-                    const move = { startPos: selectedPos, endPos: new Position(y, x) };
-                    game.makeMove(move);
-                    selectedPos = null;
-                    renderBoard();
+                    if (selectedPos.row == pos.row && selectedPos.col == pos.col) {
+                        selectedPos = null;
+                        renderBoard();
+                    } else {
+                        const move = { startPos: selectedPos, endPos: pos };
+                        const validMoves = game.board.getPiece(selectedPos)?.getMoves(game.board, selectedPos);
+
+                        const isValid = validMoves?.some(
+                            (validMove) =>
+                                validMove.endPos.row === pos.row && validMove.endPos.col === pos.col
+                        );
+
+                        if (isValid) {
+                            game.makeMove(move);
+                            selectedPos = null;
+                            renderBoard();
+                        } else {
+                            highlightMoves(selectedPos);
+                        }
+                    }
                 }
             });
 
@@ -41,14 +59,16 @@ function highlightMoves(pos: Position) {
 
     const squares = boardEl.querySelectorAll('.square');
     for (const square of squares) {
-        square.classList.remove('highlight');
+        square.classList.remove('highlight', 'selected');
     }
+
+    const selectedIndex = (pos.row - 1) * 5 + (pos.col - 1);
+    squares[selectedIndex].classList.add('selected');
 
     if (validMoves) {
         for (const move of validMoves) {
-            const index = move.endPos.col * 5 + move.endPos.row;
-            const square = squares[index];
-            square.classList.add('highlight');
+            const index = (move.endPos.row - 1) * 5 + (move.endPos.col - 1);
+            squares[index].classList.add('highlight');
         }
     }
 }

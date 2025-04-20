@@ -4,7 +4,7 @@ import { Position } from "./Position.js"
 export class PositionTracker {
     private presTracker: {[C in Color]: Position | null};
     private distLeaderTracker: {[C in Color]: Position | null};
-    private missionaryTracker: {[C in Color]: Set<Position> | null};
+    private missionaryTracker: {[C in Color]: Set<string> | null};
 
     public constructor() {
         this.presTracker = {
@@ -41,15 +41,23 @@ export class PositionTracker {
 
     public addMissionaryPos(color: Color, pos: Position | null) {
         if (pos) {
-            this.missionaryTracker[color]?.add(pos);
+            this.missionaryTracker[color]?.add(pos.toString());
         }
     }
 
     public removeMissionaryPos(color: Color, pos: Position) {
-        this.missionaryTracker[color]?.delete(pos);
+        this.missionaryTracker[color]?.delete(pos.toString());
     }
 
     public getMissionaryPos(color: Color): Set<Position> | null {
-        return this.missionaryTracker[color];
+        const strSet = this.missionaryTracker[color];
+        if (!strSet) return null;
+
+        const posSet = new Set<Position>();
+        for (const posString of strSet) {
+            posSet.add(Position.fromString(posString));
+        }
+        
+        return posSet;
     }
 }
