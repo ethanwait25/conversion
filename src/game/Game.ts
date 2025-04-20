@@ -71,9 +71,7 @@ export class Game {
             this.board.setTrackedPiece(piece.color, piece.pieceType, pos);
 
             if (piece.pieceType == PieceType.MISSIONARY) {
-                console.log("removing missionary at " + oldPos?.row + oldPos?.col);
                 this.board.removeTrackedMissionary(piece.color, oldPos);
-                console.log(this.board.getTrackedMissionaries(piece.color));
             }
         }
 

@@ -61,9 +61,11 @@ export class Missionary extends Piece {
                 continue;
             }
 
-            const targetPiece = board.getPiece(new Position(newRow, newCol));
-            if (targetPiece?.color == this.color) {
-                return true;
+            if (this.isInBounds(newRow) && this.isInBounds(newCol)) {
+                const targetPiece = board.getPiece(new Position(newRow, newCol));
+                if (targetPiece?.color == this.color) {
+                    return true;
+                }
             }
         }
 
