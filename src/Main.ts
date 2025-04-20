@@ -7,8 +7,8 @@ let selectedPos: Position | null = null;
 
 function renderBoard() {
     boardEl.innerHTML = '';
-    for (let y = 0; y < 5; y++) {
-        for (let x = 0; x < 5; x++) {
+    for (let y = 1; y <= 5; y++) {
+        for (let x = 1; x <= 5; x++) {
             const square = document.createElement('div');
             square.classList.add('square');
             const piece = game.board.getPiece(new Position(y, x));
