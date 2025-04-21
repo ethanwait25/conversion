@@ -1,0 +1,198 @@
+/* General reset and base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    background-color: #f4f1ec;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+/* Title */
+h1 {
+    font-family: 'Rye', cursive;
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #3b2c1a;
+    text-shadow: 1px 1px 2px #ccc;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(5, 80px);
+    grid-template-rows: repeat(5, 80px);
+    gap: 5px;
+    justify-content: center;
+    margin-bottom: 40px;
+    position: relative;
+    width: fit-content;
+}
+
+.square {
+    width: 80px;
+    height: 80px;
+    background-color: #fff;
+    border: 1px solid #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Piece icon */
+.piece-icon {
+    width: 60px;
+    height: 60px;
+}
+
+#piece-info {
+    flex: 2; /* Takes up more space */
+    max-width: 65%;
+}
+
+/* Piece info section */
+.piece-info {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.piece-info h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #bbb;
+    padding-bottom: 5px;
+    color: #2c2c2c;
+}
+
+.piece-info article {
+    margin-bottom: 20px;
+}
+
+.piece-info h3 {
+    font-size: 1.5rem;
+    color: #4b322c;
+    margin-bottom: 5px;
+}
+
+.piece-info p {
+    font-size: 1rem;
+    color: #444;
+    padding-left: 10px;
+}
+
+.square.highlight {
+    outline: 3px solid gold;
+    background-color: yellow;
+}
+
+.square.selected {
+    background-color: orange;
+}
+
+#board-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.bottom-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 3rem;
+    padding: 0 2rem;
+    flex-wrap: nowrap; /* Ensure side-by-side layout */
+}
+
+.controls {
+    flex: 1;
+    min-width: 220px;
+    background-color: #f2f2f2;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.board.disabled {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+#start-game {
+    background-color: darkorange;
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+#start-game:hover {
+    background-color: chocolate;
+}
+
+.board-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #333;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.board:not(.disabled) + .board-overlay {
+    display: none;
+}
+
+.game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
+    animation: fadeIn 0.3s ease;
+}
+
+#game-over-message {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #222;
+    background: #ffc107;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}

@@ -5,19 +5,50 @@ import { Position } from './game/Position.js';
 import { Person } from './Person.js';
 import { RandomAgent } from './RandomAgent.js';
 
-const white = new Person(Color.WHITE);
-const black = new RandomAgent(Color.BLACK);
-const game = new Game(white, black);
-game.play(() => {
-    renderBoard();
-}).then((winner) => {
-    if (winner !== null) {
-        console.log(`${winner.toString()} wins!`);
-    }
-});;
+let game: Game;
+let selectedPos: Position | null = null;
 
 const boardEl = document.getElementById('board')!;
-let selectedPos: Position | null = null;
+renderBoard();
+
+const boardOverlay = document.getElementById('board-overlay')!;
+const gameOverOverlay = document.getElementById('game-over-overlay')!;
+const gameOverMessage = document.getElementById('game-over-message')!;
+
+document.getElementById('start-game')!.addEventListener('click', () => {
+    const whiteType = (document.getElementById('white-player') as HTMLSelectElement).value;
+    const blackType = (document.getElementById('black-player') as HTMLSelectElement).value;
+
+    const white = createPlayer(whiteType, Color.WHITE);
+    const black = createPlayer(blackType, Color.BLACK);
+
+    game = new Game(white, black);
+    selectedPos = null;
+
+    gameOverOverlay.style.display = 'none';
+    boardEl.classList.remove('disabled');
+    boardOverlay.style.display = 'none';
+
+    game.play(() => {
+        renderBoard();
+    }).then((winner) => {
+        if (winner !== null) {
+            gameOverMessage.textContent = `${winner.toString()} wins!`;
+            gameOverOverlay.style.display = 'flex';
+        }
+    });
+
+    renderBoard();
+});
+
+function createPlayer(type: string, color: Color) {
+    switch (type) {
+        case 'Person': return new Person(color);
+        case 'Agent': return new Agent(color);
+        case 'RandomAgent': return new RandomAgent(color);
+        default: return new Person(color);
+    }
+}
 
 function renderBoard() {
     boardEl.innerHTML = '';
@@ -26,7 +57,8 @@ function renderBoard() {
             const square = document.createElement('div');
             square.classList.add('square');
             const pos = new Position(y, x);
-            const piece = game.board.getPiece(pos);
+
+            const piece = game?.board.getPiece(pos) ?? null;
 
             if (piece) {
                 const img = document.createElement('img');
@@ -36,11 +68,13 @@ function renderBoard() {
             }
 
             square.addEventListener('click', () => {
+                if (!game || boardEl.classList.contains('disabled')) return;
+
                 if (!selectedPos && piece && piece.color === game.teamTurn) {
                     selectedPos = pos;
                     highlightMoves(selectedPos);
                 } else if (selectedPos) {
-                    if (selectedPos.row == pos.row && selectedPos.col == pos.col) {
+                    if (selectedPos.row === pos.row && selectedPos.col === pos.col) {
                         selectedPos = null;
                         renderBoard();
                     } else {
@@ -54,11 +88,9 @@ function renderBoard() {
 
                         if (isValid) {
                             const player = game.players[game.teamTurn];
-    
                             if (player instanceof Person) {
                                 player.provideMove(move);
                             }
-
                             selectedPos = null;
                         } else {
                             highlightMoves(selectedPos);
@@ -90,5 +122,3 @@ function highlightMoves(pos: Position) {
         }
     }
 }
-
-renderBoard();

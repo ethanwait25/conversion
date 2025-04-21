@@ -3,7 +3,7 @@ import { Board } from "./Board.js";
 import { Color } from "./enums/Color.js";
 import { PieceType } from "./enums/PieceType.js";
 import { Move } from "./Move.js";
-import type { Piece } from "./Piece.js";
+import { Piece } from "./Piece.js";
 import { Position } from "./Position.js";
 
 export class Game {
@@ -13,10 +13,15 @@ export class Game {
     public players: {[C in Color]: Player};
     public winner: Color | null;
     
-    public constructor(whitePlayer: Player, blackPlayer: Player) {
-        this.board = new Board();
-        this.teamTurn = Color.WHITE;
-        this.remaining = {[Color.WHITE]: 8, [Color.BLACK]: 8}
+    public constructor(whitePlayer: Player, blackPlayer: Player, board?: Board, turn?: Color) {
+        this.board = board ?? new Board();
+        this.teamTurn = turn ?? Color.WHITE;
+
+        this.remaining = {
+            [Color.WHITE]: this.countPiecesOnBoard(Color.WHITE),
+            [Color.BLACK]: this.countPiecesOnBoard(Color.BLACK)
+        };
+
         this.players = {
             [Color.WHITE]: whitePlayer,
             [Color.BLACK]: blackPlayer
@@ -32,6 +37,7 @@ export class Game {
             if (onUpdate) {
                 onUpdate();
             }
+            await new Promise(resolve => setTimeout(resolve, 0));
             this.teamTurn = this.teamTurn === Color.WHITE ? Color.BLACK : Color.WHITE;
         }
         return this.winner;
@@ -88,6 +94,47 @@ export class Game {
 
     }
 
+    public getPieceCount(color: Color): number {
+        return this.remaining[color];
+    }
+
+    private countPiecesOnBoard(color: Color): number {
+        var count = 0;
+        for (var row = 1; row <= 5; ++row) {
+            for (var col = 1; col <= 5; ++col) {
+                const pos = new Position(row, col);
+                const piece = this.board.getPiece(pos);
+                if (piece && piece.color == color) {
+                    count += 1;
+                }
+            }
+        }
+        return count;
+    }
+
+    public getPieceValueScore(color: Color) {
+        const values: {[T in PieceType]: number} = {
+            [PieceType.PRESIDENT]: 15,
+            [PieceType.ASSISTANT]: 4,
+            [PieceType.ZL]: 6,
+            [PieceType.STL]: 7,
+            [PieceType.DL]: 8,
+            [PieceType.MISSIONARY]: 2
+        }
+
+        var value = 0;
+        for (var row = 1; row <= 5; ++row) {
+            for (var col = 1; col <= 5; ++col) {
+                const pos = new Position(row, col);
+                const piece = this.board.getPiece(pos);
+                if (piece && piece.color == color) {
+                    value += values[piece.getPieceType()];
+                }
+            }
+        }
+        return value;
+    }
+
     private checkWinner(): Color | null {
         if (this.remaining[Color.BLACK] === 0 || this.board.getAllMovesForColor(Color.BLACK).length === 0) {
             return Color.WHITE
@@ -97,5 +144,4 @@ export class Game {
             return null;
         }
     }
-
 }

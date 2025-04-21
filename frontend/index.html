@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversion</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rye&display=swap');
+    </style>
+</head>
+<body>
+    <h1>Conversion</h1>
+
+    <div id="board-container" style="position: relative;">
+        <div id="board-overlay" class="board-overlay">Select players to start.</div>
+        <div id="board" class="board disabled"></div>
+        <div id="game-over-overlay" class="game-over-overlay" style="display: none;">
+            <div id="game-over-message"></div>
+        </div>
+    </div>
+    
+
+    <div class="bottom-container">
+
+        <section id="piece-info" class="piece-info">
+            <h2>Piece Breakdown</h2>
+            <article>
+                <h3>P - President</h3>
+                <p>The Mission President holds the most authority. He can move horizontally, vertically, and diagonally.</p>
+            </article>
+
+            <article>
+                <h3>A - Assistant</h3>
+                <p>Assistants help support the President. They can teleport to any of the eight positions around the President.</p>
+            </article>
+
+            <article>
+                <h3>Z - Zone Leader</h3>
+                <p>Zone Leaders can go on exchanges with the District Leader. They can also move diagonally.</p>
+            </article>
+
+            <article>
+                <h3>D - District Leader</h3>
+                <p>District Leaders can go on exchanges with any Missionary. They can also move horizontally or vertically.</p>
+            </article>
+
+            <article>
+                <h3>S - Sister Training Leader</h3>
+                <p>Sister Training Leaders can also go on exchanges with any Missionary. They may move diagonally, as well.</p>
+            </article>
+
+            <article>
+                <h3>M - Missionary</h3>
+                <p>Missionaries can move one step in any direction. But be careful - they must always stay in a companionship, adjacent to another member of their team!</p>
+            </article>
+
+            <article>
+                <h2>The Goal</h2>
+                <p>Eliminate all members of the opposing team, or force them to have no available moves. Good luck!</p>
+            </article>
+        </section>
+    
+        <section class="controls">
+            <h2>Player Settings</h2>
+            <label for="white-player">White Player:</label>
+            <select id="white-player">
+                <option value="Person" selected>Person</option>
+                <option value="Agent">Agent</option>
+                <option value="RandomAgent">RandomAgent</option>
+            </select>
+    
+            <br><br>
+    
+            <label for="black-player">Black Player:</label>
+            <select id="black-player">
+                <option value="Person">Person</option>
+                <option value="Agent" selected>Agent</option>
+                <option value="RandomAgent">RandomAgent</option>
+            </select>
+    
+            <br><br>
+
+            <div class="button-container">
+                <button id="start-game">Start / Restart Game</button>
+            </div>
+        </section>
+    </div>
+    
+    <script type="module" src="./Main.js"></script>
+</body>
+</html>

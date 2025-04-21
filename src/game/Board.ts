@@ -7,15 +7,18 @@ import { PieceType } from "./enums/PieceType.js";
 import { Move } from "./Move.js";
 
 export class Board {
-    public board: Piece[][] | null[][];
+    public board: (Piece | null)[][];
     private positionTracker: PositionTracker;
 
-    public constructor() {
-        this.positionTracker = new PositionTracker();
+    public constructor(board?: (Piece | null)[][], tracker?: PositionTracker) {
+        this.positionTracker = tracker ?? new PositionTracker();
+        this.board = board ?? [];
 
-        this.board = [];
-        this.clearBoard();
-        this.setupBoard();
+        if (!board) {
+            this.clearBoard();
+            this.addDefaultTrackedPositions();
+            this.setupBoard();
+        }
     }
 
     public getPiece(pos: Position): Piece | null {
@@ -63,8 +66,6 @@ export class Board {
         this.setPiece(new Position(5, 3), createPiece(PieceType.ZL, Color.WHITE));
         this.setPiece(new Position(5, 4), createPiece(PieceType.PRESIDENT, Color.WHITE));   
         this.setPiece(new Position(5, 5), createPiece(PieceType.ASSISTANT, Color.WHITE));
-
-        this.addDefaultTrackedPositions();
     }
 
     private addDefaultTrackedPositions() {
@@ -88,13 +89,11 @@ export class Board {
 
     public setTrackedPiece(color: Color, pieceType: PieceType, pos: Position | null) {
         if (pieceType == PieceType.PRESIDENT) {
-            return this.positionTracker.setPresPos(color, pos);
+            this.positionTracker.setPresPos(color, pos);
         } else if (pieceType == PieceType.DL) {
-            return this.positionTracker.setDLPos(color, pos);
+            this.positionTracker.setDLPos(color, pos);
         } else if (pieceType == PieceType.MISSIONARY) {
-            return this.positionTracker.addMissionaryPos(color, pos);
-        } else {
-            return null;
+            this.positionTracker.addMissionaryPos(color, pos);
         }
     }
 
@@ -114,5 +113,19 @@ export class Board {
 
     public removeTrackedMissionary(color: Color, pos: Position) {
         this.positionTracker.removeMissionaryPos(color, pos);
+    }
+
+    public getHash(): string {
+        return this.board.flat().map(piece =>
+          piece ? `${piece.color[0]}-${piece.pieceType[0]}` : '0'
+        ).join('');
+    }
+
+    public clone(): Board {
+        const board: (Piece | null)[][] = this.board.map(row =>
+          row.map((piece) => piece ? createPiece(piece.pieceType, piece.color) : null)
+        );
+        const newBoard = new Board(board, this.positionTracker.clone());
+        return newBoard;
     }
 }

@@ -60,4 +60,17 @@ export class PositionTracker {
         
         return posSet;
     }
+
+    public clone(): PositionTracker {
+        var newTracker = new PositionTracker();
+
+        for (const color of Object.values(Color)) {
+            newTracker.presTracker[color] = this.presTracker[color];
+            newTracker.distLeaderTracker[color] = this.distLeaderTracker[color];
+
+            const set = this.missionaryTracker[color];
+            newTracker.missionaryTracker[color] = set ? new Set(set) : null;
+        }
+        return newTracker;
+    }
 }
