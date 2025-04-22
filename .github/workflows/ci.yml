@@ -22,6 +22,9 @@ jobs:
       - name: Build
         run: |
           npm ci && npm run build
+          cp frontend/assets public
+          cp frontend/index.html public
+          cp frontend/style.css public
 
       - name: Update dist artifact
         uses: actions/upload-artifact@v4
