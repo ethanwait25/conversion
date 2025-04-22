@@ -10,8 +10,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.set_version.outputs.version }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -20,13 +18,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-
-      - name: Set version
-        id: set_version
-        run: |
-          version=$(date +'%Y%m%d.%H%M%S')
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-          printf '{"version": "%s" }' "$version" > public/version.json
 
       - name: Build
         run: |
@@ -42,8 +33,6 @@ jobs:
     permissions:
       id-token: write
     runs-on: ubuntu-latest
-    env:
-      version: ${{ needs.build.outputs.version }}
     steps:
       - name: Create OIDC token to AWS
         uses: aws-actions/configure-aws-credentials@v4
