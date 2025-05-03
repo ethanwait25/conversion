@@ -1,4 +1,5 @@
 import { Agent } from './Agent.js';
+import { EasyDifficulty, MediumDifficulty } from './DifficultySelector.js';
 import { Color } from './game/enums/Color.js';
 import { Game } from './game/Game.js';
 import { Position } from './game/Position.js';
@@ -44,7 +45,8 @@ document.getElementById('start-game')!.addEventListener('click', () => {
 function createPlayer(type: string, color: Color) {
     switch (type) {
         case 'Person': return new Person(color);
-        case 'Agent': return new Agent(color);
+        case 'Agent': return new Agent(color, new MediumDifficulty);
+        case 'AgentEasy': return new Agent(color, new EasyDifficulty);
         case 'RandomAgent': return new RandomAgent(color);
         default: return new Person(color);
     }

@@ -1,3 +1,4 @@
+import { Person } from "../Person.js";
 import { Player } from "../Player.js";
 import { Board } from "./Board.js";
 import { Color } from "./enums/Color.js";
@@ -12,8 +13,9 @@ export class Game {
     public remaining: {[C in Color]: number};
     public players: {[C in Color]: Player};
     public winner: Color | null;
+    public testMode: boolean;
     
-    public constructor(whitePlayer: Player, blackPlayer: Player, board?: Board, turn?: Color) {
+    public constructor(whitePlayer: Player, blackPlayer: Player, board?: Board, turn?: Color, testMode?: boolean) {
         this.board = board ?? new Board();
         this.teamTurn = turn ?? Color.WHITE;
 
@@ -27,17 +29,29 @@ export class Game {
             [Color.BLACK]: blackPlayer
         }
         this.winner = null;
+        this.testMode = testMode ?? false;
     }
 
     public async play(onUpdate?: () => void): Promise<Color | null> {
         while (!(this.winner = this.checkWinner())) {
             const currentPlayer = this.players[this.teamTurn];
+
+            var startTime = Date.now();
             const move = await currentPlayer.getMove(this);
+            var elapsedTime = Date.now() - startTime;
+            if (!(currentPlayer instanceof Person) && elapsedTime < 400 && !this.testMode) {
+                await new Promise(resolve => setTimeout(resolve, 400 - elapsedTime));
+            }
+            
             this.makeMove(move);
             if (onUpdate) {
                 onUpdate();
             }
-            await new Promise(resolve => setTimeout(resolve, 0));
+
+            if (!this.testMode) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
+
             this.teamTurn = this.teamTurn === Color.WHITE ? Color.BLACK : Color.WHITE;
         }
         return this.winner;

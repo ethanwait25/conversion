@@ -1,3 +1,4 @@
+import { DifficultySelector } from "./DifficultySelector.js";
 import { Board } from "./game/Board.js";
 import { Color } from "./game/enums/Color.js";
 import { PieceType } from "./game/enums/PieceType.js";
@@ -16,7 +17,7 @@ type Metrics = {
 
 export class Agent extends Player {
   private maxDepth: number = 0;
-  private cache: Map<string, number> = new Map();
+  private cache: Map<string, { value: number; move: Move | null }> = new Map();
 
   private metrics: Metrics = {
     states: [0, 0],
@@ -31,25 +32,21 @@ export class Agent extends Player {
   private pruned = 0;
   private pulled = 0;
   private playerColor;
+  private params;
 
-  public constructor(color: Color) {
+  public constructor(color: Color, params: DifficultySelector) {
     super(color);
     this.playerColor = color;
+    this.params = params;
   }
 
   public async getMove(game: Game): Promise<Move> {
-    var startTime = Date.now();
     var move: Move = this.chooseBestMove(game);
-    var elapsedTime = Date.now() - startTime;
-
-    if (elapsedTime < 400) {
-        await new Promise(resolve => setTimeout(resolve, 400 - elapsedTime));
-    }
     return move;
   }
 
   public chooseBestMove(game: Game): Move {
-    this.maxDepth = game.getPieceCount(this.playerColor) < 5 ? 5 : 3
+    this.maxDepth = game.getPieceCount(this.playerColor) < 5 ? this.params.earlyDepth : this.params.lateDepth
     this.testedStates = 0;
     this.leafNodes = 0;
     this.pruned = 0;
@@ -58,32 +55,28 @@ export class Agent extends Player {
     const [v, bestAction] = this.maxValue(game, -Infinity, Infinity, 0);
     this.count += 1;
 
-    console.log("returning:", bestAction);
-    console.log("move value:", v);
-    console.log(
-      `Ave: [ ${this.metrics.states[0].toFixed(
-        2
-      )}, ${this.metrics.leaves[0].toFixed(
-        2
-      )}, ${this.metrics.pruned[0].toFixed(
-        2
-      )}, ${this.metrics.pulled[0].toFixed(2)} ]`
-    );
-    console.log(
-      `Max: [ ${this.metrics.states[1].toFixed(
-        2
-      )}, ${this.metrics.leaves[1].toFixed(
-        2
-      )}, ${this.metrics.pruned[1].toFixed(
-        2
-      )}, ${this.metrics.pulled[1].toFixed(2)} ]`
-    );
+    // console.log("returning:", bestAction);
+    // console.log("move value:", v);
+    // console.log(
+    //   `Ave: [ ${this.metrics.states[0].toFixed(
+    //     2
+    //   )}, ${this.metrics.leaves[0].toFixed(
+    //     2
+    //   )}, ${this.metrics.pruned[0].toFixed(
+    //     2
+    //   )}, ${this.metrics.pulled[0].toFixed(2)} ]`
+    // );
+    // console.log(
+    //   `Max: [ ${this.metrics.states[1].toFixed(
+    //     2
+    //   )}, ${this.metrics.leaves[1].toFixed(
+    //     2
+    //   )}, ${this.metrics.pruned[1].toFixed(
+    //     2
+    //   )}, ${this.metrics.pulled[1].toFixed(2)} ]`
+    // );
 
     this.updateMetrics();
-    if (bestAction == null) {
-      console.log("Best action is null for some reason");
-      console.log(v)
-    }
     return bestAction!;
   }
 
@@ -101,7 +94,8 @@ export class Agent extends Player {
     const stateHash = this.getStateHash(game);
     if (this.cache.has(stateHash)) {
       this.pulled += 1;
-      return [this.cache.get(stateHash)!, null];
+      const cached = this.cache.get(stateHash)!;
+      return [cached.value, cached.move];
     }
 
     let v = -Infinity;
@@ -115,12 +109,12 @@ export class Agent extends Player {
       }
       if (v >= b) {
         this.pruned += 1;
-        this.cache.set(stateHash, v);
+        this.cache.set(stateHash, { value: v, move: bestAction });
         return [v, bestAction];
       }
       a = Math.max(a, v);
     }
-    this.cache.set(stateHash, v);
+    this.cache.set(stateHash, { value: v, move: bestAction });
     return [v, bestAction];
   }
 
@@ -138,7 +132,8 @@ export class Agent extends Player {
     const stateHash = this.getStateHash(game);
     if (this.cache.has(stateHash)) {
       this.pulled += 1;
-      return [this.cache.get(stateHash)!, null];
+      const cached = this.cache.get(stateHash)!;
+      return [cached.value, cached.move];
     }
 
     let v = Infinity;
@@ -152,12 +147,12 @@ export class Agent extends Player {
       }
       if (v <= a) {
         this.pruned += 1;
-        this.cache.set(stateHash, v);
+        this.cache.set(stateHash, { value: v, move: bestAction });
         return [v, bestAction];
       }
       b = Math.min(b, v);
     }
-    this.cache.set(stateHash, v);
+    this.cache.set(stateHash, { value: v, move: bestAction });
     return [v, bestAction];
   }
 
@@ -218,17 +213,19 @@ export class Agent extends Player {
     }
 
     let phase = (myPieces + oppPieces) / 16;
-    let valueWeight = 0.25 + (0.2 * phase);
-    let mobilityWeight = 0.25 - (0.2 * phase);
-    let centralScoreWeight = 0.15;
-    let parityWeight = 0.15;
-    let threatWeight = 0.20;
+    let valueWeight = this.params.valueWeight + (0.2 * phase);
+    let mobilityWeight = this.params.mobilityWeight - (0.2 * phase);
+    let centralScoreWeight = this.params.centralScoreWeight;
+    let parityWeight = this.params.parityWeight;
+    let threatWeight = this.params.threatWeight;
 
-    return (parityWeight * pieceParity) + 
+    let score = (parityWeight * pieceParity) + 
       (mobilityWeight * mobility) + 
       (valueWeight * valueScore) + 
       (centralScoreWeight * centralScore) +
       (threatWeight * threatScore);
+
+    return score + (Math.random() < 0.5 ? -1 : 1) * (Math.random() * this.params.rVariation * score);
   }
 
   utilify(game: Game): number {

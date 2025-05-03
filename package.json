@@ -1,21 +1,23 @@
 {
-  "name": "conversion",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "npx serve public"
-  },
-  "keywords": [],
-  "type": "module",
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/lodash": "^4.17.16",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "lodash": "^4.17.21"
-  }
+    "name": "conversion",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "vite build",
+        "start": "vite",
+        "test": "node --loader ts-node/esm src/TestHarness.ts"
+    },
+    "keywords": [],
+    "type": "module",
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/lodash": "^4.17.16",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3"
+    },
+    "dependencies": {
+        "lodash": "^4.17.21"
+    }
 }

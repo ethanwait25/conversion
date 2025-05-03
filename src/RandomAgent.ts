@@ -10,11 +10,10 @@ export class RandomAgent extends Player {
 
     public async getMove(game: Game): Promise<Move> {
         const availableMoves = game.board.getAllMovesForColor(this.color);
-        await new Promise(resolve => setTimeout(resolve, 400));
-        return this.chooseBestMove(availableMoves); 
+        return this.chooseRandomMove(availableMoves);
     }
 
-    public chooseBestMove(moves: Move[]): Move {
+    public chooseRandomMove(moves: Move[]): Move {
         return moves[Math.floor(Math.random() * moves.length)];
     }
 }

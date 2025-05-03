@@ -196,3 +196,9 @@ h1 {
     border-radius: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
+
+#version-info {
+    font-size: 0.75rem;
+    padding: 2rem 2rem 0.5rem 2rem;
+    text-align: left;
+}

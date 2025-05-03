@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Conversion</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./src/style.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rye&display=swap');
     </style>
@@ -66,6 +66,7 @@
             <select id="white-player">
                 <option value="Person" selected>Person</option>
                 <option value="Agent">Agent</option>
+                <option value="AgentEasy">Agent (Easy)</option>
                 <option value="RandomAgent">RandomAgent</option>
             </select>
     
@@ -75,6 +76,7 @@
             <select id="black-player">
                 <option value="Person">Person</option>
                 <option value="Agent" selected>Agent</option>
+                <option value="AgentEasy">Agent (Easy)</option>
                 <option value="RandomAgent">RandomAgent</option>
             </select>
     
@@ -85,7 +87,22 @@
             </div>
         </section>
     </div>
+
+    <div id="version-info"></div>
+
+    <script>
+        fetch("./version.json")
+            .then(res => res.json()
+            .then(data => {
+                const versionContainter = document.getElementById("version-info");
+                versionContainter.textContent = `Version ${data.version}`;
+            })
+            .catch(error => {
+                console.error("Error loading version:", error)
+            })
+        );
+    </script>
     
-    <script type="module" src="./Main.js"></script>
+    <script type="module" src="./src/Main.ts"></script>
 </body>
 </html>

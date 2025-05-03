@@ -19,18 +19,20 @@ jobs:
         with:
           node-version: '20.x'
 
+      - name: Set version
+        run: |
+          version=$(date +'%Y%m%d.%H%M%S')
+          printf '{"version": "%s" }' "$version" > public/version.json
+
       - name: Build
         run: |
           npm ci && npm run build
-          cp -r frontend/assets public
-          cp frontend/index.html public
-          cp frontend/style.css public
 
       - name: Update dist artifact
         uses: actions/upload-artifact@v4
         with:
           name: package
-          path: public/
+          path: dist/
   deploy:
     needs: build
     permissions:
@@ -48,10 +50,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package
-          path: public/
+          path: dist/
 
       - name: Push to AWS S3
         run: |
           echo Deploying new version
-          aws s3 cp public s3://${{ secrets.APP_BUCKET }}/public --recursive
+          aws s3 cp dist s3://${{ secrets.APP_BUCKET }} --recursive
           aws cloudfront create-invalidation --distribution-id ${{ secrets.DISTRIBUTION_ID }} --paths "/*"
